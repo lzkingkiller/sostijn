@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  namespace: wordpress
+  labels:
+    app: wordpress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wordpress
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      containers:
+        - name: wordpress
+          image: wordpress:5.8.3-php7.4-apache
+          ports:
+            - containerPort: 80
+              name: wordpress
+          volumeMounts:
+            - mountPath: "/data"
+              name: pv-wp-claim
+          env:
+            - name: WORDPRESS_DB_HOST
+              value: mysqlsvc.development.svc.cluster.local
+            - name: WORDPRESS_DB_PASSWORD
+              value: Welkom01
+            - name: WORDPRESS_DB_USER
+              value: root
+            - name: WORDPRESS_DB_NAME
+              value: wordpress
+      volumes:
+        - name: pv-wp-claim
+          persistentVolumeClaim:
+            claimName: pv-wp-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpresssvc
+  namespace: development
+  labels:
+    app: wordpresssvc
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    app: wordpress
