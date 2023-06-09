@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-wordpress
+  namespace: wordpress
+  labels:
+    app: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: wpmysql
+          image: mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: Welkom01
+            - name: MYSQL_DATABASE
+              value: wordpress
+          volumeMounts:
+            - mountPath: "/data"
+              name: pv-mysql-claim
+      volumes:
+        - name: pv-mysql-claim
+          persistentVolumeClaim:
+            claimName: pv-mysql-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysqlsvc
+  namespace: development
+  labels:
+    app: mysqlsvc
+spec:
+  type: NodePort
+  ports:
+  - port: 3306
+    protocol: TCP
+  selector:
+    app: mysql
