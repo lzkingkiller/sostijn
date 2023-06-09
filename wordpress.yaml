@@ -26,7 +26,7 @@ spec:
               name: pv-wp-claim
           env:
             - name: WORDPRESS_DB_HOST
-              value: mysqlsvc.development.svc.cluster.local
+              value: mysqlsvc.wordpress.svc.cluster.local
             - name: WORDPRESS_DB_PASSWORD
               value: Welkom01
             - name: WORDPRESS_DB_USER
@@ -42,7 +42,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: wordpresssvc
-  namespace: development
+  namespace: wordpress
   labels:
     app: wordpresssvc
 spec:
